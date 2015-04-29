@@ -43,7 +43,12 @@ const instanceMethods = {
     }
   },
 
+  componentDidMount() {
+    this.mounted = true;
+  },
+
   componentWillUnmount() {
+    this.mounted = false;
     const flux = this.getFlux();
 
     for (let key in this._fluxListeners) {
@@ -64,7 +69,9 @@ const instanceMethods = {
 
   updateStores(props = this.props) {
     const state = this.getStoreState(props);
-    this.setState(state);
+    if (this.mounted) {
+      this.setState(state);
+    }
   },
 
   getStoreState(props = this.props) {
@@ -228,7 +235,9 @@ export { instanceMethods, staticProperties };
 function createStoreListener(component, store, storeStateGetter) {
   return function() {
     const state = storeStateGetter(store, this.props);
-    this.setState(state);
+    if (this.mounted) {
+      this.setState(state);
+    }
   }.bind(component);
 }
 
